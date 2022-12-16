@@ -1,0 +1,95 @@
+
+//<![CDATA[
+
+if(typeof(inDapIF) != "undefined"){parent.dap_Resize(document.body.id, 300, 125);}
+document.write('<div>');
+var aURL_97=new Array('','https://web.archive.org/web/20060503132319/http://g.msn.com/0AD0002T/885820.5.1??PID=3065251&amp;UIT=G&amp;TargetID=1052296&amp;AN=1093288572&amp;PG=MSNREC','','','','','','','');
+var szNameOfFlashObj_97="NGAPFlashObj_97";
+var MSAdsEmbed=0,MSAdsUseFlash=0,MSNadsBGCOLOR="#FFFFFF",MSNadsMENU="FALSE",MSNadsWIDTH=300,MSNadsHEIGHT=125;
+
+var bShowFlash_97=false;
+if (navigator.appVersion.indexOf("Win")>=0 && parseFloat(navigator.appVersion.substr(navigator.appVersion.indexOf("MSIE ")+5))>=4)
+{
+	document.write('<SCR'+'IPT LANGUAGE=VBScript\> \n');
+	document.write('on error resume next \n');
+	document.write('bShowFlash_97=( IsObject(CreateObject("ShockwaveFlash.ShockwaveFlash.4")))\n');
+	document.write('</SCR'+'IPT\>');
+
+
+	if(bShowFlash_97==true)
+	{
+		var sFlashObjName_97 = "msn_click"+Math.floor(10000*Math.random());
+		var objText_97 = 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="'+szNameOfFlashObj_97+'" width="'+MSNadsWIDTH+'"  height="'+MSNadsHEIGHT+'" style="z-index:-1"><param name="movie" value="https://web.archive.org/web/20060503132319/http://global.msads.net/ads/3493/0000003493_000000000000000298940.swf?fd='+ location.hostname + '&clickTAG='+escape('https://web.archive.org/web/20060503132319/http://g.msn.com/0AD0002T/885820.5.1??PID=3065251&amp;UIT=G&amp;TargetID=1052296&amp;AN=1093288572&amp;PG=MSNREC')+'"><param name="wmode" value="opaque"><param name="quality" value="high"><param name="loop" value="true">';
+		document.write('<img ID="GTrkImg_97" src="http://" width="1" height="1" style="display: none;"\>');
+		
+		if (typeof(inDapIF) != "undefined")
+		{
+			document.write('<object ' + objText_97 + '</object>');
+			attachEvents_885820();
+		}
+		else
+		{
+			if (document.body == null) document.write('<html><body>');
+			document.write('<span id="adspan_885820"></span>');
+			document.write('<scr' + 'ipt language="javascript" src="https://web.archive.org/web/20060503132319/http://ads1.msn.com/library/flashlib.js" onreadystatechange="initFlash_885820();"><\/scr' + 'ipt>');			
+			if (document.body == null) document.write('</body></html>');
+		}
+	}
+	else
+	{
+		dlWrite_885820();
+	}
+}
+else
+{
+		dlWrite_885820();
+}
+
+function initFlash_885820()
+{
+	if (event.srcElement.readyState == "complete")
+	{
+		writeObjectTagGeneric("adspan_885820", objText_97);
+		attachEvents_885820();
+	}
+}
+
+function attachEvents_885820()
+{
+	document.all[szNameOfFlashObj_97].attachEvent("fscommand",function (cmd,args)
+		{
+			if(cmd.indexOf("URL")==0)
+			{
+				window.open(aURL_97[cmd.substr(3)],"_blank");
+			}
+			if(cmd=="NGAPMovie1"){document.all[szNameOfFlashObj_97].movie="https://web.archive.org/web/20060503132319/http://global.msads.net/ads/3493/0000003493_000000000000000298940.swf?fd='+ location.hostname + '&clickTAG=" + escape("https://web.archive.org/web/20060503132319/http://g.msn.com/0AD0002T/885820.5.1??PID=3065251&amp;UIT=G&amp;TargetID=1052296&amp;AN=1093288572&amp;PG=MSNREC");document.all[szNameOfFlashObj_97].Rewind();document.all[szNameOfFlashObj_97].StopPlay();window.setTimeout("waitForLoad()", 100);}
+			
+			
+		});
+}
+
+function dlWrite_885820()
+{
+
+	document.write('<a target="_blank" href="https://web.archive.org/web/20060503132319/http://g.msn.com/0AD0002T/885820.1??PID=3065251&amp;UIT=G&amp;TargetID=1052296&amp;AN=1093288572&amp;PG=MSNREC"><img src="https://web.archive.org/web/20060503132319/http://global.msads.net/ads/3493/0000003493_000000000000000298941.gif" width="300" height="125" border="0" alt="Click&#32;Here&#33;" /></a>');
+	document.write('<div style="display:none;"><img src="https://web.archive.org/web/20060503132319/http://g.msn.com/0AD0002T/885820.4??PID=3065251&amp;UIT=G&amp;TargetID=1052296&amp;AN=1093288572&amp;PG=MSNREC" width="1" height="1" /><img src="https://web.archive.org/web/20060503132319/http://global.msads.net/ads/ABUIMG/clear.gif" width="1" height="1" /></div>');
+}
+
+function waitForLoad()
+{
+
+	if(document.all[szNameOfFlashObj_97].PercentLoaded() < 100)
+	{
+		window.setTimeout("waitForLoad()",100);
+	}
+	else
+	{
+		document.all[szNameOfFlashObj_97].TGotoLabel("/","MSNStatic");
+		document.all[szNameOfFlashObj_97].Play();
+	}
+}
+
+
+document.write('</div>');
+document.close();
+//]]>

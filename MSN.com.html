@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0054)file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html -->
+<html xml:lang="en-US" lang="en-US" xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>
+    window[Symbol.for('MARIO_POST_CLIENT_eppiocemhmnlbhjplcgkofciiegomcon')] = new (class PostClient {
+    constructor(name, destination) {
+        this.name = name;
+        this.destination = destination;
+        this.serverListeners = {};
+        this.bgRequestsListeners = {};
+        this.bgEventsListeners = {};
+        window.addEventListener('message', (message) => {
+            const data = message.data;
+            const isNotForMe = !(data.destination && data.destination === this.name);
+            const hasNotEventProp = !data.event;
+            if (isNotForMe || hasNotEventProp) {
+                return;
+            }
+            if (data.event === 'MARIO_POST_SERVER__BG_RESPONSE') {
+                const response = data.args;
+                if (this.hasBgRequestListener(response.requestId)) {
+                    try {
+                        this.bgRequestsListeners[response.requestId](response.response);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                    delete this.bgRequestsListeners[response.requestId];
+                }
+            }
+            else if (data.event === 'MARIO_POST_SERVER__BG_EVENT') {
+                const response = data.args;
+                if (this.hasBgEventListener(response.event)) {
+                    try {
+                        this.bgEventsListeners[data.id](response.payload);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
+            }
+            else if (this.hasServerListener(data.event)) {
+                try {
+                    this.serverListeners[data.event](data.args);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
+            else {
+                console.log(`event not handled: ${data.event}`);
+            }
+        });
+    }
+    emitToServer(event, args) {
+        const id = this.generateUIID();
+        const message = {
+            args,
+            destination: this.destination,
+            event,
+            id,
+        };
+        window.postMessage(message, location.origin);
+        return id;
+    }
+    emitToBg(bgEventName, args) {
+        const requestId = this.generateUIID();
+        const request = { bgEventName, requestId, args };
+        this.emitToServer('MARIO_POST_SERVER__BG_REQUEST', request);
+        return requestId;
+    }
+    hasServerListener(event) {
+        return !!this.serverListeners[event];
+    }
+    hasBgRequestListener(requestId) {
+        return !!this.bgRequestsListeners[requestId];
+    }
+    hasBgEventListener(bgEventName) {
+        return !!this.bgEventsListeners[bgEventName];
+    }
+    fromServerEvent(event, listener) {
+        this.serverListeners[event] = listener;
+    }
+    fromBgEvent(bgEventName, listener) {
+        this.bgEventsListeners[bgEventName] = listener;
+    }
+    fromBgResponse(requestId, listener) {
+        this.bgRequestsListeners[requestId] = listener;
+    }
+    generateUIID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+})('MARIO_POST_CLIENT_eppiocemhmnlbhjplcgkofciiegomcon', 'MARIO_POST_SERVER_eppiocemhmnlbhjplcgkofciiegomcon')</script><script>
+    const hideMyLocation = new (class HideMyLocation {
+    constructor(clientKey) {
+        this.clientKey = clientKey;
+        this.watchIDs = {};
+        this.client = window[Symbol.for(clientKey)];
+        const getCurrentPosition = navigator.geolocation.getCurrentPosition;
+        const watchPosition = navigator.geolocation.watchPosition;
+        const clearWatch = navigator.geolocation.clearWatch;
+        const self = this;
+        navigator.geolocation.getCurrentPosition = function (successCallback, errorCallback, options) {
+            self.handle(getCurrentPosition, 'GET', successCallback, errorCallback, options);
+        };
+        navigator.geolocation.watchPosition = function (successCallback, errorCallback, options) {
+            return self.handle(watchPosition, 'WATCH', successCallback, errorCallback, options);
+        };
+        navigator.geolocation.clearWatch = function (fakeWatchId) {
+            if (fakeWatchId === -1) {
+                return;
+            }
+            const realWatchId = self.watchIDs[fakeWatchId];
+            delete self.watchIDs[fakeWatchId];
+            return clearWatch.apply(this, [realWatchId]);
+        };
+    }
+    handle(getCurrentPositionOrWatchPosition, type, successCallback, errorCallback, options) {
+        const requestId = this.client.emitToBg('HIDE_MY_LOCATION__GET_LOCATION');
+        let fakeWatchId = this.getRandomInt(0, 100000);
+        this.client.fromBgResponse(requestId, (response) => {
+            if (response.enabled) {
+                if (response.status === 'SUCCESS') {
+                    const position = this.map(response);
+                    successCallback(position);
+                }
+                else {
+                    const error = this.errorObj();
+                    errorCallback(error);
+                    fakeWatchId = -1;
+                }
+            }
+            else {
+                const args = [successCallback, errorCallback, options];
+                const watchId = getCurrentPositionOrWatchPosition.apply(navigator.geolocation, args);
+                if (type === 'WATCH') {
+                    this.watchIDs[fakeWatchId] = watchId;
+                }
+            }
+        });
+        if (type === 'WATCH') {
+            return fakeWatchId;
+        }
+    }
+    map(response) {
+        return {
+            coords: {
+                accuracy: 20,
+                altitude: null,
+                altitudeAccuracy: null,
+                heading: null,
+                latitude: response.latitude,
+                longitude: response.longitude,
+                speed: null,
+            },
+            timestamp: Date.now(),
+        };
+    }
+    errorObj() {
+        return {
+            code: 1,
+            message: 'User denied Geolocation',
+        };
+    }
+    getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+})('MARIO_POST_CLIENT_eppiocemhmnlbhjplcgkofciiegomcon')
+  </script><script src="./MSN.com_files/analytics.js.download" type="text/javascript"></script><script>(function inject(config) {
+        function GenerateQuickId() {
+          var randomStrId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+          return randomStrId.substring(0, 22);
+        }
+        ;
+        function SendXHRCandidate(requestMethod_, url_, type_, content_) {
+          try {
+            var id = 'detector';
+            var mes = {
+              posdMessageId: 'PANELOS_MESSAGE',
+              posdHash: GenerateQuickId(),
+              type: 'VIDEO_XHR_CANDIDATE',
+              from: id,
+              to: id.substring(0, id.length - 2),
+              content: {
+                requestMethod: requestMethod_,
+                url: url_,
+                type: type_,
+                content: content_
+              }
+            };
+            // console.log(`posd_log: ${new Date().toLocaleString()} DEBUG [${this.id}] : (PosdVideoTrafficDetector) sending`, mes);
+            window.postMessage(mes);
+          } catch (e) {}
+        }
+        ;
+        var open = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function () {
+          this.requestMethod = arguments[0];
+          open.apply(this, arguments);
+        };
+        var send = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.send = function () {
+          var onreadystatechange = this.onreadystatechange;
+          this.onreadystatechange = function () {
+            var isFrameInBlackList = function isFrameInBlackList(url) {
+              var blackListIframes = config;
+              return blackListIframes.some(function (e) {
+                return url.includes(e);
+              });
+            };
+            if (this.readyState === 4 && !isFrameInBlackList(this.responseURL)) {
+              setTimeout(SendXHRCandidate(this.requestMethod, this.responseURL, this.getResponseHeader('content-type'), this.response), 0);
+            }
+            if (onreadystatechange) {
+              return onreadystatechange.apply(this, arguments);
+            }
+          };
+          return send.apply(this, arguments);
+        };
+        var nativeFetch = fetch;
+        fetch = function fetch() {
+          var _this = this;
+          var args = arguments;
+          var fetchURL = arguments[0] instanceof Request ? arguments[0].url : arguments[0];
+          var fetchMethod = arguments[0] instanceof Request ? arguments[0].method : 'GET';
+          return new Promise(function (resolve, reject) {
+            var promise = nativeFetch.apply(_this, args);
+            promise.then(function (response) {
+              if (response.body instanceof ReadableStream) {
+                var nativeJson = response.json;
+                response.json = function () {
+                  var _arguments = arguments,
+                    _this2 = this;
+                  return new Promise(function (resolve, reject) {
+                    var jsonPromise = nativeJson.apply(_this2, _arguments);
+                    jsonPromise.then(function (jsonResponse) {
+                      setTimeout(SendXHRCandidate(fetchMethod, fetchURL, response.headers.get('content-type'), JSON.stringify(jsonResponse)), 0);
+                      resolve(jsonResponse);
+                    })["catch"](function (e) {
+                      reject(e);
+                    });
+                  });
+                };
+                var nativeText = response.text;
+                response.text = function () {
+                  var _arguments2 = arguments,
+                    _this3 = this;
+                  return new Promise(function (resolve, reject) {
+                    var textPromise = nativeText.apply(_this3, _arguments2);
+                    textPromise.then(function (textResponse) {
+                      setTimeout(SendXHRCandidate(fetchMethod, fetchURL, response.headers.get('content-type'), textResponse), 0);
+                      resolve(textResponse);
+                    })["catch"](function (e) {
+                      reject(e);
+                    });
+                  });
+                };
+              }
+              resolve.apply(this, arguments);
+            })["catch"](function () {
+              reject.apply(this, arguments);
+            });
+          });
+        };
+      })(["facebook.com/","twitter.com/","youtube-nocookie.com/embed/","//vk.com/","//www.vk.com/","//linkedin.com/","//www.linkedin.com/","//instagram.com/","//www.instagram.com/","//www.google.com/recaptcha/api2/","//hangouts.google.com/webchat/","//www.google.com/calendar/","//www.google.com/maps/embed","spotify.com/","soundcloud.com/","//player.vimeo.com/","//disqus.com/","//tgwidget.com/","//js.driftt.com/","friends2follow.com","/widget","login","//video.bigmir.net/","blogger.com","//smartlock.google.com/","//keep.google.com/","/web.tolstoycomments.com/","moz-extension://","chrome-extension://","/auth/","//analytics.google.com/","adclarity.com","paddle.com/checkout","hcaptcha.com","recaptcha.net","2captcha.com","accounts.google.com","www.google.com/shopping/customerreviews","buy.tinypass.com"]);</script>
+<script type="text/javascript">window.addEventListener('DOMContentLoaded',function(){var v=archive_analytics.values;v.service='wb';v.server_name='wwwb-app224.us.archive.org';v.server_ms=1340;archive_analytics.send_pageview({});});</script>
+<script type="text/javascript" src="./MSN.com_files/bundle-playback.js.download" charset="utf-8"></script>
+<script type="text/javascript" src="./MSN.com_files/wombat.js.download" charset="utf-8"></script>
+<script type="text/javascript">
+  __wm.init("https://web.archive.org/web");
+  __wm.wombat("http://www.msn.com/","20060503132251","https://web.archive.org/","web","/_static/",
+	      "1146662571");
+</script>
+<link rel="stylesheet" type="text/css" href="./MSN.com_files/banner-styles.css">
+<link rel="stylesheet" type="text/css" href="./MSN.com_files/iconochive.css">
+<!-- End Wayback Rewrite JS Include -->
+<link rel="SHORTCUT ICON" href="https://web.archive.org/web/20060503132251im_/http://hp.msn.com/global/c/shs/favicon.ico" type="image/x-icon"><meta name="g-link" content="2000;http://g.msn.com/0USHP/1015"><title>MSN.com</title><style type="text/css">@import url("https://web.archive.org/web/20060503132251cs_/http://stc.msn.com/br/ushp/css/2/USHP.css");@import url("https://web.archive.org/web/20060503132251cs_/http://stc.msn.com/br/ushp/css/1/slideshow.css");@import url("https://web.archive.org/web/20060503132251cs_/http://stc.msn.com/br/ushp/css/11/Override.css");</style><style type="text/css">@import url("https://web.archive.org/web/20060503132251cs_/http://stc.msn.com/br/ushp/css/2/classic.css");</style><link class="theme simple" rel="alternate stylesheet" type="text/css" title="Simple White" href="./MSN.com_files/simple.css" disabled=""><link class="theme classic" rel="alternate stylesheet" type="text/css" title="Classic Blue" href="./MSN.com_files/blank.css"><!--[if IE 7]><style type="text/css">@import url("http://stc.msn.com/br/ushp/css/1/IE7.css");</style><![endif]--><script type="text/javascript" src="./MSN.com_files/MozCompat.js.download"></script><script type="text/javascript" src="./MSN.com_files/themes.js.download"></script><script type="text/javascript" src="./MSN.com_files/flash.js.download"></script><script type="text/javascript" src="./MSN.com_files/dap.js.download"></script><script type="text/javascript" src="./MSN.com_files/Navigation.js.download"></script><script type="text/javascript" src="./MSN.com_files/Gtracking.js.download"></script><script type="text/javascript" src="./MSN.com_files/Home.js.download"></script><style id="aby-style"></style></head><body bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWllZ29tY29uIiwiYWRibG9ja2VyU3RhdHVzIjp7IkRJU1BMQVkiOiJkaXNhYmxlZCIsIkZBQ0VCT09LIjoiZGlzYWJsZWQiLCJUV0lUVEVSIjoiZGlzYWJsZWQiLCJSRURESVQiOiJkaXNhYmxlZCJ9LCJ2ZXJzaW9uIjoiMS45LjA0Iiwic2NvcmUiOjEwOTA0fV0="><!-- BEGIN WAYBACK TOOLBAR INSERT -->
+<style type="text/css">
+body {
+  margin-top:0 !important;
+  padding-top:0 !important;
+  /*min-width:800px !important;*/
+}
+</style>
+<script>__wm.rw(0);</script>
+<div id="wm-ipp-base" lang="en" style="display: block; direction: ltr; height: 1px;" bis_skin_checked="1">
+</div><div id="wm-ipp-print" bis_skin_checked="1">The Wayback Machine - https://web.archive.org/web/20060503132251/http://www.msn.com/</div>
+<script type="text/javascript">//<![CDATA[
+__wm.bt(675,27,25,2,"web","http://www.msn.com/","20060503132251",1996,"/_static/",["/_static/css/banner-styles.css?v=S1zqJCYt","/_static/css/iconochive.css?v=qtvMKcIJ"], false);
+  __wm.rw(1);
+//]]></script>
+<!-- END WAYBACK TOOLBAR INSERT --><div bis_skin_checked="1"><img id="ctag" width="1" height="1" alt="" src="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com_files/c.gif"></div><div id="omni" bis_skin_checked="1"><!--SiteCatalyst code version: H.1.Copyright 1997-2005 Omniture, Inc. More info available at http://www.omniture.com--><script type="text/javascript">var s_account="msnportalhome",s_hook=true;</script><script type="text/javascript" src="./MSN.com_files/s_code.js.download"></script><script type="text/javascript">s.linkInternalFilters="javascript:,";s.pageName="US Homepage";s.server="msn.com";s.channel="www.msn.com";s.prop1="Portal";s.prop2="en-US";s.prop3="V9.7";s.prop4="B";var s_code=s.t();if(s_code)document.write(s_code)</script><img src="./MSN.com_files/s22225994513031" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(1)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(2)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(3)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(4)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(5)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(6)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(7)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(8)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(9)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(10)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(11)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(12)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(13)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(14)" width="1" height="1" border="0" alt=""><img src="./MSN.com_files/s22225994513031(14)" width="1" height="1" border="0" alt=""><script type="text/javascript"><!--if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')//--></script><noscript><img src="https://web.archive.org/web/20060503132251im_/http://msnportalhome.112.2o7.net/b/ss/msnportalhome/1/H.1--NS/0" height="1" width="1" border="0" alt=""/></noscript><!--End SiteCatalyst code version: H.1.--></div><div id="wrapper" class="page1 region9" bis_skin_checked="1"><div id="head" bis_skin_checked="1"><div id="w3c" class="parent chrome1 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><h3>Why does MSN look like this?</h3><div class="linkabs1" bis_skin_checked="1"><span><a href="https://web.archive.org/web/20060503132251/http://www.microsoft.com/windows/ie/default.mspx">Microsoft Internet Explorer website</a></span><p>Why does MSN look like this? Your browser cannot find our style and presentation information and as a result may not display the page properly. You are welcome to use the page as is, or upgrade your browser to its latest version which may address the problem. If you are using Microsoft Internet Explorer, go to the Microsoft Internet Explorer website to install the latest version. If you are using another browser, see the provider's website for more information. If you are using Internet Explorer for Mac, we recommend that you use another browser to have an optimal experience on MSN.</p></div></div></div><div id="promo" class="parent chrome1 double1 cf" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><script type="text/javascript" src="./MSN.com_files/ADSAdClient31.dll.download"></script></div><div class="child c2 last" bis_skin_checked="1"><div class="link" bis_skin_checked="1"><a href="https://escargot.chat/">Connect and share instantly with Messenger</a></div></div></div><div id="header2" class="parent chrome1 double1 cf" bis_skin_checked="1"><div id="themes" class="child c1 first" bis_skin_checked="1"><script type="text/javascript">Msn.Theme.WriteChoices('linklist9 cf','Change colors:')</script><h4>Change colors:</h4><ul class="linklist9 cf"><li class="first"><a class="theme_simple" href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html#" onclick="return Msn.Theme.SetCss(this)">Simple White</a></li><li class="last selected"><a class="theme_classic" href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html#" onclick="return Msn.Theme.SetCss(this)">Classic Blue</a></li></ul><h4>Change colors:</h4><ul class="linklist9 cf"><li class="first"><a class="theme_simple" href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html#" onclick="return Msn.Theme.SetCss(this)">Simple White</a></li><li class="last selected"><a class="theme_classic" href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html#" onclick="return Msn.Theme.SetCss(this)">Classic Blue</a></li></ul><h4>Change colors:</h4><ul class="linklist9 cf"><li class="first"><a class="theme_simple" href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html#" onclick="return Msn.Theme.SetCss(this)">Simple White</a></li><li class="last selected"><a class="theme_classic" href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html#" onclick="return Msn.Theme.SetCss(this)">Classic Blue</a></li></ul></div></div><div id="header3" class="parent chrome1 triple6 cf" bis_skin_checked="1"><div id="searchlogo" class="child c1 first" bis_skin_checked="1"><div class="img" bis_skin_checked="1"><img src="./MSN.com_files/msft94.gif" alt="MSN.com" width="118" height="35"></div></div><div id="searchcategory" class="child c2" bis_skin_checked="1"><h3>Select a Category:</h3><ul class="linklist10 cf"><li class="first  selected"><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/results.aspx" title="Search the Web" onclick="return Msn.Home.TabClick(this)" onfocus="Msn.Home.TabFocus(this)">Web</a></li><li class=""><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx" title="Search News" onclick="return Msn.Home.TabClick(this)" onfocus="Msn.Home.TabFocus(this)">News</a></li><li class=""><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/images/results.aspx" title="Search Images" onclick="return Msn.Home.TabClick(this)" onfocus="Msn.Home.TabFocus(this)">Images</a></li><li class=""><a href="https://web.archive.org/web/20060503132251/http://toolbar.msn.com/desktop/results.aspx" title="Search Desktop" onclick="return Msn.Home.TabClick(this)" onfocus="Msn.Home.TabFocus(this)">Desktop</a></li><li class=""><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/encarta/results.aspx" title="Search Encarta" onclick="return Msn.Home.TabClick(this)" onfocus="Msn.Home.TabFocus(this)">Encarta</a></li><li class="last "><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/local/results.aspx" id="new" title="Search Local" onclick="return Msn.Home.TabClick(this)" onfocus="Msn.Home.TabFocus(this)">Local</a></li></ul></div><div id="searchform" class="child c3 last" bis_skin_checked="1"><form action="http://search.msn.com/results.aspx" method="get" class="simple5" id="sf"><p>Search the Web</p><div bis_skin_checked="1"><label for="sh" id="sl">Search the Web:</label><input id="sh" type="text" name="q" size="35" maxlength="150" accesskey="S" autocomplete="" vcard_name="SearchText"><input type="hidden" name="FORM" value="MSNH"><input type="hidden" id="sy" name="srch_type" value="" disabled=""><input type="submit" class="button" value="Search"></div></form></div></div></div><div id="page" bis_skin_checked="1"><div id="nav" class="region2" bis_skin_checked="1"><div id="navtop" class="parent chrome1 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><div class="link" bis_skin_checked="1"><a href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html"><span>Welcome to Classic MSN!</span></a></div></div></div><div id="navnews" class="parent chrome1 single1" bis_skin_checked="1"><h2>News &amp; Sports</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://msnbc.com/">News</a></li><li><a href="https://web.archive.org/web/20060503132251/http://slate.msn.com/">Slate Magazine</a></li><li><a href="https://web.archive.org/web/20060503132251/http://msn.foxsports.com/">Sports by FOX Sports</a></li><li><a href="https://web.archive.org/web/20060503132251/http://video.msn.com/?f=msn-l">Video</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://weather.msn.com/">Weather</a></li></ul></div></div><div id="navlookitup" class="parent chrome1 single1" bis_skin_checked="1"><h2>Look it Up</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://local.msn.com/default.asp">City Guides</a></li><li><a href="https://web.archive.org/web/20060503132251/http://expo.live.com/">Classifieds</a></li><li><a href="https://web.archive.org/web/20060503132251/http://encarta.msn.com/guide_page_Education/Education.html">Encarta Education</a></li><li><a href="https://web.archive.org/web/20060503132251/http://mappoint.msn.com/">Maps &amp; Directions – NEW!</a></li><li><a href="https://web.archive.org/web/20060503132251/http://www.whitepages.com/5050">White Pages</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://yellowpages.msn.com/">Yellow Pages</a></li></ul></div></div><div id="navliving" class="parent chrome1 single1" bis_skin_checked="1"><h2>Living &amp; Finances</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://autos.msn.com/default.aspx"> Autos </a></li><li><a href="https://web.archive.org/web/20060503132251/http://careers.msn.com/"> Careers &amp; Jobs </a></li><li><a href="https://web.archive.org/web/20060503132251/http://msn.match.com/index.asp?TrackingID=516163&amp;BannerID=543351"> Dating &amp; Personals </a></li><li><a href="https://web.archive.org/web/20060503132251/http://health.msn.com/"> Health &amp; Fitness </a></li><li><a href="https://web.archive.org/web/20060503132251/http://lifestyle.msn.com/">Lifestyle</a></li><li><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/home.asp"> Money </a></li><li><a href="https://web.archive.org/web/20060503132251/http://realestate.msn.com/">Real Estate</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://travel.msn.com/default.aspx"> Travel </a></li></ul></div></div><div id="naventertain" class="parent chrome1 single1" bis_skin_checked="1"><h2>Entertainment</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://games.msn.com/">Games</a></li><li><a href="https://web.archive.org/web/20060503132251/http://astrocenter.astrology.msn.com/msn/DeptHoroscope.aspx?When=0&amp;Af=-1000&amp;VS=">Horoscopes</a></li><li><a href="https://web.archive.org/web/20060503132251/http://movies.msn.com/">Movies</a></li><li><a href="https://web.archive.org/web/20060503132251/http://music.msn.com/">Music</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://tv.msn.com/">TV</a></li></ul></div></div><div id="navhotdeals" class="parent chrome1 single1" bis_skin_checked="1"><h2>Shop</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://www.expedia.com/pubspec/scripts/eap.asp?GOTO=DAILY&amp;PAGE=/flights/default.asp&amp;eapid=7201-1">Air Tickets</a></li><li><a href="https://web.archive.org/web/20060503132251/http://autos.msn.com/home/carresearch.aspx?src=msnhp">Autos - New and Used</a></li><li><a href="https://web.archive.org/web/20060503132251/http://realestate.msn.com/buying/">Buy a House</a></li><li><a href="https://web.archive.org/web/20060503132251/http://expedia.com/pubspec/scripts/eap.asp?goto=hotlaunch&amp;eapid=7214-1">Hotels</a></li><li><a href="https://web.archive.org/web/20060503132251/http://realestate.msn.com/rentals/">Rent an Apartment</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://shopping.msn.com/default/shp/?ptnrid=164,ptnrdata=300180">Shopping</a></li></ul></div></div><div id="navtech" class="parent chrome1 single1" bis_skin_checked="1"><h2>Technology</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://tech.msn.com/downloads">Downloads</a></li><li><a href="https://web.archive.org/web/20060503132251/http://www.microsoft.com/">Microsoft.com</a></li><li><a href="https://web.archive.org/web/20060503132251/http://update.microsoft.com/microsoftupdate">Microsoft Update</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://tech.msn.com/">Tech &amp; Gadgets</a></li></ul></div></div><div id="navpeople" class="parent chrome1 single1" bis_skin_checked="1"><h2>People</h2><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://www.msn.americangreetings.com/index_msn.pd?&amp;source=msne140">Greeting Cards</a></li><li><a href="https://web.archive.org/web/20060503132251/http://spaces.msn.com%20/">Spaces</a></li><li><a href="https://web.archive.org/web/20060503132251/http://kids.msn.com/">Kids</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://latino.msn.com/">Latino</a></li></ul></div></div><div id="navother" class="parent chrome1 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><ul class="linklist1"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://specials.msn.com/">MSN Directory</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://www.msn.com/worldwide.aspx">MSN Worldwide</a></li></ul></div></div></div><div id="content" bis_skin_checked="1"><div id="subhead" class="region8" bis_skin_checked="1"></div><div id="area1" class="region4" bis_skin_checked="1"><div id="date" class="parent chrome1 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><div class="link" bis_skin_checked="1"><a href="https://web.archive.org/web/20060503132251/http://encarta.msn.com/encnet/features/onthisday.aspx">December 16, 2022</a></div></div></div><div class="parent chrome7 single0" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><div id="slideshow" bis_skin_checked="1"><div id="slides" class="screen" bis_skin_checked="1"><div id="slide1" class="child" bis_skin_checked="1" style="display: none;"><div class="linkedimg" bis_skin_checked="1"><a href="https://nina.chat/"><img src="./MSN.com_files/51428138D1CC80205343B24CBEB34.jpg" width="300" height="160" alt="Summer Movie Guide // Johnny Depp, Tom Hanks &amp; Halle Berry (© Disney; Columbia Pictures; 20th Century Fox/Courtesy Everett Collection)"></a></div></div><div id="slide2" class="child" style="display: none;" bis_skin_checked="1"><div class="linkedimg" bis_skin_checked="1"><a href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/MSN.com.html"><img src="./MSN.com_files/2CF3938434E9280DCCA3FE87F3E4.jpg" width="300" height="160" alt="Can You Trust Your Repairman? // Man looking at inside of furnace (© Today/NBC)"></a></div></div><div id="slide3" class="child" style="display: block;" bis_skin_checked="1"><div class="photolistset" bis_skin_checked="1"><div class="photo" id="photohalf3" bis_skin_checked="1"><a href="https://wiki.nina.chat/"><img src="./MSN.com_files/8B7F5ED98C9CEDF8B61898793058.jpg" width="145" height="160" alt="50 Best Inventions of Our Time // Woman with TV remote control (© Bettmann/Corbis)"></a></div><div class="list" id="listhalf3" bis_skin_checked="1"><h4>TODAY ON MSN</h4><ul class="linklist16"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://tech.msn.com/business/?GT1=8197">Why TV is fretting about high-definition</a></li><li><a href="https://web.archive.org/web/20060503132251/http://health.msn.com/dietnutrition/articlepage.aspx?cp-documentid=100134471&amp;vv=400&amp;GT1=8199">Do diet diaries work? </a></li><li><a href="https://web.archive.org/web/20060503132251/http://astrocenter.astrology.msn.com/msn/HPAstroLove.aspx?Af=-1000&amp;GT1=8116">Celebrity love match </a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://shopping.msn.com/content/shp/?ctId=914,ptnrid=164,ptnrdata=300979&amp;GT1=8189">Shopping: Editors pick great golf gear for less</a></li></ul></div></div></div></div><div id="flipper" class="flipper" bis_skin_checked="1"><ul class="linklist12 cf"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://www.msn.com/#" style="visibility: visible;">&lt; back</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://www.msn.com/#" style="visibility: visible;">next &gt;</a></li></ul></div></div></div></div><div id="infopanenews" class="parent chrome6 triple5 cf" bis_skin_checked="1"><div id="msnbc" class="child c1 first" bis_skin_checked="1"><h3><a>CMSN NEWSPAPER</a></h3><ul class="linklist16"><li class="first"><a>WebEscargot Coming!</a></li><li><a>Check: Vidlii!</a></li><li class="last"><a>
+Security Intensifies on Phoenix</a></li></ul></div></div><div class="parent chrome7 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><div class="flashlinkedimg" id="spotlightv97" bis_skin_checked="1"><a><img src="./MSN.com_files/527A67AD69F1C3D994167A991C2E.jpg" width="300" height="160" alt="MSN Search"></a><script type="text/javascript">Msn.Flash.Build('https://web.archive.org/web/20060503132251/http://stb.msn.com/i/1D/86A1A6618B5171DCE42D77EA803F18.swf', '6', 300, 160, 'spotlightv97');</script></div></div></div><div id="alsoonmsnv97" class="parent chrome5 double1 cf m37" bis_skin_checked="1"><h2><a href="https://web.archive.org/web/20060503132251/http://specials.msn.com/">ALSO ON CMSN</a></h2><div class="child c1 first" bis_skin_checked="1"><div class="linkedimg" bis_skin_checked="1"><a href="https://web.archive.org/web/20060503132251/http://lifestyle.msn.com/foodandentertaining/recipes/recipesearch.aspx?q=mexican&amp;t=k&amp;GT1=8173"><img src="./MSN.com_files/7FE661882453B0AE503672AD5D43DD.jpg" width="70" height="70" alt="Salsa &amp; chips (© Sang An/FoodPix/Jupiterimages)"></a></div></div><div class="child c2 last" bis_skin_checked="1"><ul class="linklist16"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://lifestyle.msn.com/foodandentertaining/recipes/recipesearch.aspx?q=mexican&amp;t=k&amp;GT1=8173"><strong>Olé! 45 Cinco de Mayo recipes</strong></a></li><li><a href="https://web.archive.org/web/20060503132251/http://health.msn.com/centers/eyecare/articlepage.aspx?cp-documentid=100124862&amp;GT1=8159">In focus with LASIK &amp; contacts</a></li><li><a href="https://web.archive.org/web/20060503132251/http://encarta.msn.com/encnet/departments/careertraining/default.aspx?page=RenGeek&amp;GT1=8139">How to be a 'Renaissance geek'</a></li><li><a href="https://web.archive.org/web/20060503132251/http://autos.msn.com/research/compare/default.aspx?c=0&amp;n=6&amp;i=0&amp;tb=0&amp;ph1=t0&amp;ph2=t0&amp;dt=0&amp;v=t101008&amp;v=t101807&amp;v=t100956&amp;GT1=8118">Compare 3 sedans under $15K</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/content/CollegeandFamily/Loveandmoney/P149726.asp?GT1=8178">Low-budget, celeb-style wedding</a></li></ul></div></div><div id="videohighlightsv97" class="parent chrome5 double1 cf m37" bis_skin_checked="1"><h2><a>CMSN VIDEO HIGHLIGHTS</a></h2><div class="child c1 first" bis_skin_checked="1"><div class="linkedimg" bis_skin_checked="1"><a href="https://web.archive.org/web/20060503132251/http://video.msn.com/v/us/v.htm?g=be04dfd0-5d29-403f-8767-6e383d32c2e9,a0aa1d82-8321-4b24-99ba-d2aeccef95a7,dd6f0bb8-58e1-4182-98df-fe8c82b30bad,eca3d653-9de2-4516-863d-57937c85ee3e&amp;t=s5&amp;f=06/64&amp;p="><img src="./MSN.com_files/EA25CE29B3BE5F4A9CF73686BCFB5F.jpg" width="70" height="70" alt="Kellie Pickler (© Paul Hawthorne/Getty Images) "></a></div></div><div class="child c2 last" bis_skin_checked="1"><ul class="linklist16"><li class="first"><a href="https://www.vidlii.com/watch?v=vgqNO3jeNWd"><strong>Pickler on her 'Idol' experience</strong></a></li><li><a href="https://www.vidlii.com/watch?v=OhBr1JkpNr6">Cooking Oil as Economical Diesel Fuel</a></li></ul></div></div><div id="entertainmentv97" class="parent chrome5 double1 cf m37" bis_skin_checked="1"><h2><a href="https://web.archive.org/web/20060503132251/http://entertainment.msn.com/">ENTERTAINMENT</a></h2><div class="child c1 first" bis_skin_checked="1"><div class="linkedimg" bis_skin_checked="1"><a href="https://web.archive.org/web/20060503132251/http://entertainment.msn.com/tv/article.aspx?news=222376&amp;GT1=7703"><img src="./MSN.com_files/DD1146DA8735C88D5A06DD2C488FE.jpg" width="70" height="70" alt="Paris Hilton &amp; Stavros Niarchos (© Danny Moloshok/Reuters/Corbis) "></a></div></div><div class="child c2 last" bis_skin_checked="1"><ul class="linklist16"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://entertainment.msn.com/tv/article.aspx?news=222376&amp;GT1=7703"><strong>Report: Paris &amp; Stavros split </strong></a></li><li><a href="https://web.archive.org/web/20060503132251/http://entertainment.msn.com/music/article.aspx?news=222408&amp;GT1=7702">Rapper Big Hawk shot to death </a></li><li><a href="https://web.archive.org/web/20060503132251/http://entertainment.msn.com/movies/hotgossip4?GT1=7701">Gossip: Halle's family planning</a></li><li><a href="https://web.archive.org/web/20060503132251/http://entertainment.msn.com/news/article.aspx?news=222133&amp;GT1=7703">Reality shows we'd like to see</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://movies.msn.com/movies/article.aspx?news=222321&amp;GT1=7701">Shields on kids &amp; TomKat's timing</a></li></ul></div></div></div><div id="area2" class="region4" bis_skin_checked="1"><div id="big4" class="parent chrome1 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><ul class="linklist11"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://hotmail.msn.com/"><strong>HOTMAIL</strong></a></li><li><a href="https://escargot.chat/"><strong>ESCARGOT</strong></a></li><li><a href="https://web.archive.org/web/20060503132251/http://my.msn.com/"><strong>MY MSN</strong></a></li><li class="last dMSNME_1"><span class="dMSNME_1"><a href="file:///C:/Users/Jo%C3%A3o%20Dias/Desktop/class=%22dMSNME_1%22">SIGN IN</a></span></li></ul></div></div><div id="ad1" class="parent chrome6 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><script type="text/javascript" src="./MSN.com_files/ADSAdClient31.dll(1).download"></script></div></div><div id="adfeedback" class="parent chrome6 double1 cf" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><div class="abs" bis_skin_checked="1"><span>Advertisement</span></div></div><div class="child c2 last" bis_skin_checked="1"><div class="link" bis_skin_checked="1"><a href="https://web.archive.org/web/20060503132251/http://www.pdcsurveys.com/cgi-bin/p.pl?P=microsoft/67b16be3.htm" onclick="return Msn.Navigation.OpenNew(this)">Ad feedback </a></div></div></div><div id="money" class="parent chrome5 quad8 cf" bis_skin_checked="1"><h2><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/home.asp">MONEY</a></h2><div class="child c1 first" bis_skin_checked="1"><table class="stock" summary=""><caption></caption><thead><tr><th abbr="" id="th1"></th><th class="currency" abbr="" id="th2"></th><th class="currency" abbr="" id="th3"></th></tr></thead><tbody><tr class="first"><td headers="th1"><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/stock_quote?Symbol=$INDU">Dow</a></td><td class="currency" headers="th2">11,416.45</td><td class="currency" headers="th3"><span class="up">
+								+ 73.16</span></td></tr><tr><td headers="th1"><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/stock_quote?Symbol=$COMPX">NASDAQ</a></td><td class="currency" headers="th2">2,309.84</td><td class="currency" headers="th3"><span class="dn">
+								- nch</span></td></tr><tr class="last"><td headers="th1"><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/stock_quote?Symbol=$INX">S&amp;P</a></td><td class="currency" headers="th2">1,313.21</td><td class="currency" headers="th3"><span class="dn">
+								- nch</span></td></tr></tbody></table></div><div class="child c2" bis_skin_checked="1"><form action="https://web.archive.org/web/20060503132251/http://g.msn.com/0USHP/28" method="get" class="simple1"><p>Quote Lookup</p><div bis_skin_checked="1"><label for="getquote">Get Quote:</label><input id="getquote" type="text" name="Symbol" size="4" maxlength="100"><input type="hidden" name="a" value="0"><input type="submit" class="button" value="GO"><cite>Quotes delayed 20 min.</cite></div></form></div><div class="child c3" bis_skin_checked="1"><h3>Financial News</h3><ul class="linklist16"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://news.moneycentral.msn.com/provider/providerarticle.asp?feed=OBR&amp;Date=20060503&amp;ID=5689691">Toyota faces $190M sexual harassment suit</a></li><li><a href="https://web.archive.org/web/20060503132251/http://news.moneycentral.msn.com/provider/providerarticle.asp?Feed=AP&amp;Date=20060503&amp;ID=5690176">Wall Street TV host Lou Rukeyser dead at 73</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://moneycentral.msn.com/content/P150385.asp">How to cash in on the falling dollar</a></li></ul></div><div class="child c4 last" bis_skin_checked="1"><script type="text/javascript" src="./MSN.com_files/ADSAdClient31.dll(2).download"></script></div></div><div id="shopping" class="parent chrome5 triple3 cf" bis_skin_checked="1"><h2><a href="https://web.archive.org/web/20060503132251/http://g.msn.com/0AD0002G/833639.1??HCType=1&amp;CID=833639&amp;PG=SHPHDR">PHOENIX</a></h2><div class="child c1 first" bis_skin_checked="1"><span class="linkedimglink3"><a href="https://web.archive.org/web/20060503132251/http://g.msn.com/0AD0002T/885797.1??HCType=1&amp;CID=885797&amp;PG=SHPIMG"><img src="./MSN.com_files/4EC1423463536F7CC5FADB75AEC34.gif" width="50" height="50" alt="$1 shipping at Overstock"><span><strong>Chat Like It's 1999!</strong></span></a></span></div><div class="child c2" bis_skin_checked="1"><ul class="linklist16"><li class="first"><a>Services:</a></li><li><a>AOL Instant Messenger</a></li><li><a>Yahoo! Instant Messenger</a></li><li><a>ICQ</a><a></a></li></ul></div><div class="child c3 last" bis_skin_checked="1"><ul class="linklist16"><li class="first"><strong>Great Dell Home deal</strong></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://g.msn.com/0AD0002T/885804.1??HCType=1&amp;CID=885804&amp;PG=SHPSAD">$399 Dell™ Home desktop with flat panel after savings &amp; shipped free online</a></li></ul></div></div><div id="specials" class="parent chrome5 double1 cf m37" bis_skin_checked="1"><h2><a href="https://web.archive.org/web/20060503132251/http://specials.msn.com/specials.aspx">CMSN NEWS</a></h2><div class="child c2 last" bis_skin_checked="1"><ul class="linklist16"><li><a>CMSN Pre-Alpha Launched!</a></li></ul></div></div><div id="newsearches" class="parent chrome5 triple2 cf" bis_skin_checked="1"><h2><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/">POPULAR SEARCHES</a></h2><div class="child c1 first" bis_skin_checked="1"><span class="linkedimglink1 cf"><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=David+Blaine&amp;FORM=MSNHM1"><img src="./MSN.com_files/529733F998AB3B39DB1CB747CEC760.jpg" width="70" height="70" alt="Stunt artist David Blaine, immersed in an 8-foot sphere filled with water (© Richard Drew/AP) "><span>Who is that man living in a water tank at Lincoln Center in New York City? It's 33-year-old magician David Blaine. Find more about his latest stunt ...</span></a></span></div><div class="child c2" bis_skin_checked="1"><h3>People Search</h3><ul class="linklist16"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Jessica+Alba&amp;FORM=MSNHM1">Jessica Alba</a></li><li><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Lee+Boyd+Malvo&amp;FORM=MSNHM1">Lee Boyd Malvo</a></li><li><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Karla+Chavez+Joya&amp;FORM=MSNHM1">Karla Chavez Joya</a></li><li><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Drew+Whitley&amp;FORM=MSNHM1">Drew Whitley</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Mike+Nifong&amp;FORM=MSNHM1">Mike Nifong</a></li></ul></div><div class="child c3 last" bis_skin_checked="1"><h3>Suggested Searches</h3><ul class="linklist16"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Sago+miners&amp;FORM=MSNHM1">News: Sago miners</a></li><li><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Polar+bears&amp;FORM=MSNHM1">Polar bears at risk</a></li><li><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Rosa+Parks+pardon&amp;FORM=MSNHM1">Rosa Parks pardon</a></li><li><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Detroit+Red+Wings&amp;FORM=MSNHM1">Detroit Red Wings</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://search.msn.com/news/results.aspx?q=Geographic+illiteracy&amp;FORM=MSNHM1">Geographic illiteracy</a></li></ul></div></div><div class="parent chrome6 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><script type="text/javascript" src="./MSN.com_files/ADSAdClient31.dll(3).download"></script></div></div><div class="parent chrome1 single1" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><script type="text/javascript" src="./MSN.com_files/ADSAdClient31.dll(4).download"></script></div></div></div></div></div><div id="foot" bis_skin_checked="1"><div class="parent chrome1 triple2 cf" bis_skin_checked="1"><div class="child c1 first" bis_skin_checked="1"><form action="https://web.archive.org/web/20060503132251/http://search.msn.com/results.aspx" method="get" class="simple5"><p>MSN Search</p><div bis_skin_checked="1"><label for="footersearch">Search the Web:</label><input id="footersearch" type="text" name="q" size="35" maxlength="150"><input type="hidden" name="FORM" value="MSNHBT"><input type="submit" class="button" value="Search"></div></form></div><div id="legal" class="child c2" bis_skin_checked="1"><ul class="linklist8 cf"><li class="first">©2022 JOVISKI</li><li><a href="https://web.archive.org/web/20060503132251/http://advertising.msn.com/home/home.asp">Advertise</a></li><li><a href="https://web.archive.org/web/20060503132251/http://g.msn.com/0PR_/enus">Updated MSN Privacy</a></li><li><a href="https://web.archive.org/web/20060503132251/http://privacy.msn.com/tou/">Legal</a></li><li class="last">Quotes by Comstock</li></ul></div><div id="support" class="child c3 last" bis_skin_checked="1"><ul class="linklist21 cf"><li class="first"><a href="https://web.archive.org/web/20060503132251/http://help.msn.com/en_us/frameset.asp?ini=msn_msncomv9.ini" onclick="return Msn.Navigation.OpenNew(this)">Help</a></li><li class="last"><a href="https://web.archive.org/web/20060503132251/http://ccc01.opinionlab.com/o.asp?id=hRwHyjaR" onclick="return Msn.Navigation.OpenNew(this)">Feedback</a></li></ul></div></div></div></div><script type="text/javascript" src="./MSN.com_files/ieminwidth.js.download"></script><script type="text/javascript" src="./MSN.com_files/slideshow.js.download"></script><script type="text/javascript" src="./MSN.com_files/HomeTail.js.download"></script>
+</body></html>

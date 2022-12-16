@@ -1,0 +1,68 @@
+var _____WB$wombat$assign$function_____ = function(name) {return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
+if (!self.__WB_pmw) { self.__WB_pmw = function(obj) { this.__WB_source = obj; return this; } }
+{
+  let window = _____WB$wombat$assign$function_____("window");
+  let self = _____WB$wombat$assign$function_____("self");
+  let document = _____WB$wombat$assign$function_____("document");
+  let location = _____WB$wombat$assign$function_____("location");
+  let top = _____WB$wombat$assign$function_____("top");
+  let parent = _____WB$wombat$assign$function_____("parent");
+  let frames = _____WB$wombat$assign$function_____("frames");
+  let opener = _____WB$wombat$assign$function_____("opener");
+
+
+var _daprr=new Array('https://web.archive.org/web/20060502193010/http://rad.msn.com/ADSAdClient31.dll?GetSAd=','https://web.archive.org/web/20060502193010/http://a.rad.msn.com/ADSAdClient31.dll?GetSAd=','https://web.archive.org/web/20060502193010/http://b.rad.msn.com/ADSAdClient31.dll?GetSAd=');var _daprs=0;function dap(qs,fw,fh,ob)
+{var rs=_daprr[_daprs++];if(_daprs>=_daprr.length)_daprs=0;var dapIfs="";if(typeof(ob)!='undefined')
+{ob=true;}
+else
+{ob=false;}
+if(_dapUtils.is_ie5up&&_dapUtils.is_win&&!ob)
+{dapIfs='dapIf'+(parseInt(parent.frames.length)+1);document.write('<iframe id="'+dapIfs+'" src="about:blank" width="'+fw+'" height="'+fh+'" frameborder="0" scrolling="no"></iframe>');document.frames[dapIfs].document.open("text/html", "replace");document.frames[dapIfs].document.write('<html><head><title>Advertisement</title></head><body id="'+dapIfs+'" leftmargin="0" topmargin="0"><scr'+'ipt type="text/javascript">var inDapIF=true;</scr'+'ipt><scr'+'ipt type="text/javascript" src="'+rs+qs+'"></scr'+'ipt><scr'+'ipt type="text/javascript">window.setTimeout("document.close();", 2000);</scr'+'ipt></body></html>');}
+else
+{document.write('<scr'+'ipt src="'+rs+qs+'" type="text/javascript" language="JavaScript"></scr'+'ipt>');}}
+function dap_Resize(fid,fw,fh)
+{document.getElementById(fid).width=fw;document.getElementById(fid).height=fh;}
+function dapOAF(qs,oa,fw,fh)
+{dap(qs,fw,fh);}
+_dapUtilClass=function()
+{var ua=navigator.userAgent.toLowerCase();var av=navigator.appVersion.toLowerCase();this.minorVer=parseFloat(av);this.majorVer=parseInt(this.minorVer);this.is_opera=(ua.indexOf("opera")!=-1);this.is_mac=(ua.indexOf("mac")!=-1);var iePos=av.indexOf('msie');if(iePos!=-1)
+{if(this.is_mac)
+{var iePos=ua.indexOf('msie');this.minorVer=parseFloat(ua.substring(iePos+5,ua.indexOf(';',iePos)));}
+else
+{this.minorVer=parseFloat(av.substring(iePos+5,av.indexOf(';',iePos)));}
+this.majorVer=parseInt(this.minorVer);}
+this.is_ie=((iePos!=-1)&&(!this.is_opera));this.is_ie3=(this.is_ie&&(this.majorVer<4));this.is_ie4=(this.is_ie&&this.majorVer==4);this.is_ie4up=(this.is_ie&&this.minorVer>=4);this.is_ie5=(this.is_ie&&this.majorVer==5);this.is_ie5up=(this.is_ie&&this.minorVer>=5);this.is_ie5_5=(this.is_ie&&(ua.indexOf("msie 5.5")!=-1));this.is_ie5_5up=(this.is_ie&&this.minorVer>=5.5);this.is_ie6=(this.is_ie&&this.majorVer==6);this.is_ie6up=(this.is_ie&&this.minorVer>=6);this.is_webtv=(ua.indexOf("webtv")!=-1);this.is_msn=(av.indexOf("msn")>=0);this.is_win=((ua.indexOf("win")!=-1)||(ua.indexOf("16bit")!=-1));this.is_mac=(ua.indexOf("mac")!=-1);if(this.is_mac){this.is_win=!this.is_mac;}
+this.has_Flash=false;this.FlashVer=0;this.detectFlash=function()
+{if(this.is_win&&this.is_ie4up)
+{var dynaFrame='<iframe id="flashDetect" src="about:blank" width="1" height="1" frameborder="0" scrolling="no" style="display:none;"></iframe>';document.body.insertAdjacentHTML("afterBegin",dynaFrame);winObject=window["flashDetect"];docObject=winObject.document;top.isFlashVersion=0;top.isFlash=false;docObject.write('<SCR'+'IPT LANGUAGE=VBScript\> \n');docObject.write('Dim hasPlayer, playerversion \n');docObject.write('playerversion = 10 \n');docObject.write('Do While playerversion > 0 \n');docObject.write('On Error Resume Next \n');docObject.write('hasPlayer = (IsObject(CreateObject("ShockwaveFlash.ShockwaveFlash." & playerversion))) \n');docObject.write('If hasPlayer = true Then Exit Do \n');docObject.write('playerversion = playerversion - 1 \n');docObject.write('Loop \n');docObject.write('top.isFlashVersion = playerversion \n');docObject.write('top.isFlash = hasPlayer \n');docObject.write('</SCR'+'IPT\>');docObject.close();this.has_Flash=top.isFlash;this.FlashVer=top.isFlashVersion;document.all["flashDetect"].removeNode(true);}}
+this.hasCookie=function(cookieName)
+{var bHasCookie=false,sCookie=document.cookie,aCookie=sCookie.split(";");for(var i=0;i<aCookie.length;i++)
+{while(aCookie[i].substr(0,1)==' ')
+{aCookie[i]=aCookie[i].substr(1);}
+if(aCookie[i].indexOf(cookieName+'=')==0)
+{bHasCookie=true;break;}}
+return bHasCookie;}}
+var _dapUtils=new _dapUtilClass();
+
+}
+/*
+     FILE ARCHIVED ON 19:30:10 May 02, 2006 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:54:22 Dec 15, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 1112.873
+  exclusion.robots: 0.16
+  exclusion.robots.policy: 0.147
+  RedisCDXSource: 121.756
+  esindex: 0.013
+  LoadShardBlock: 289.406 (3)
+  PetaboxLoader3.datanode: 349.771 (4)
+  CDXLines.iter: 70.673 (3)
+  load_resource: 318.055
+  PetaboxLoader3.resolve: 202.27
+*/

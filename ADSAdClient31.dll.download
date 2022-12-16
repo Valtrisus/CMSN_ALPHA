@@ -1,0 +1,60 @@
+var _____WB$wombat$assign$function_____ = function(name) {return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
+if (!self.__WB_pmw) { self.__WB_pmw = function(obj) { this.__WB_source = obj; return this; } }
+{
+  let window = _____WB$wombat$assign$function_____("window");
+  let self = _____WB$wombat$assign$function_____("self");
+  let document = _____WB$wombat$assign$function_____("document");
+  let location = _____WB$wombat$assign$function_____("location");
+  let top = _____WB$wombat$assign$function_____("top");
+  let parent = _____WB$wombat$assign$function_____("parent");
+  let frames = _____WB$wombat$assign$function_____("frames");
+  let opener = _____WB$wombat$assign$function_____("opener");
+
+
+//<![CDATA[
+var contents_217 = '<span><a target="_blank" href="https://web.archive.org/web/20060503132300/http://g.msn.com/0AD0002T/885181.1?!'s bones?&amp;amp;FORM=MSNHIA&amp;&amp;PID=3070793&amp;UIT=G&amp;TargetID=1056502&amp;AN=856687259&amp;PG=MSN9UT">Find: Who invented Napier\'s bones?</A></span>';
+if (navigator.appVersion.indexOf("Win")>=0 && parseFloat(navigator.appVersion.substr(navigator.appVersion.indexOf("MSIE ")+5))>=4)
+{
+	try
+	{
+		fh_217=parent.document.all[document.body.id];
+		if(!fh_217 || document.body.id.indexOf('dapIf') == -1)
+		{
+			dlWrite();
+		}
+		else
+		{
+			fh_217.parentNode.insertAdjacentHTML('afterBegin', contents_217);
+			fh_217.style.display='none';
+		}
+	}
+	catch(e)
+	{
+		dlWrite();
+	}
+}else{dlWrite();}
+function dlWrite(){document.write(contents_217);}
+document.close();
+//]]>
+
+}
+/*
+     FILE ARCHIVED ON 13:23:00 May 03, 2006 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:54:23 Dec 15, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 100.31
+  exclusion.robots: 0.089
+  exclusion.robots.policy: 0.081
+  RedisCDXSource: 0.678
+  esindex: 0.009
+  LoadShardBlock: 71.099 (3)
+  PetaboxLoader3.datanode: 85.208 (4)
+  CDXLines.iter: 19.714 (3)
+  load_resource: 36.359
+*/

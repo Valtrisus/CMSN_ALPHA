@@ -1,0 +1,71 @@
+var _____WB$wombat$assign$function_____ = function(name) {return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
+if (!self.__WB_pmw) { self.__WB_pmw = function(obj) { this.__WB_source = obj; return this; } }
+{
+  let window = _____WB$wombat$assign$function_____("window");
+  let self = _____WB$wombat$assign$function_____("self");
+  let document = _____WB$wombat$assign$function_____("document");
+  let location = _____WB$wombat$assign$function_____("location");
+  let top = _____WB$wombat$assign$function_____("top");
+  let parent = _____WB$wombat$assign$function_____("parent");
+  let frames = _____WB$wombat$assign$function_____("frames");
+  let opener = _____WB$wombat$assign$function_____("opener");
+
+
+if(!window.Msn){window.Msn={};}
+Msn.Theme=new function(){var me=this;var d=document;var w=window;var thc="hptheme";var thd=null;function E(id){return d.getElementById(id);}
+function T(tg){return d.getElementsByTagName(tg);}
+function gdt(ls){thd='';for(var i=0;i<ls.length;++i){var l=ls[i],r=l.getAttribute("rel");if(r.indexOf("style")!=-1&&l.getAttribute("title")){if(l.href.indexOf('blank')>0){thd=l.className.substring(6);break;}}}}
+function doTheme(t){var ls=T("link");if(thd===null){gdt(ls);}
+for(var i=0;i<ls.length;i++){var l=ls[i],r=l.getAttribute("rel");if(r.indexOf("style")!=-1&&l.getAttribute("title")){l.disabled=true;if(!t){l.disabled=(l.href.indexOf('blank')<0);}
+else{if(l.className.substring(6)==t){l.disabled=false;}}}}
+var c=me.GetCookie(thc);if(t&&t!=thd){if(t!=c){me.SetCookie(thc,t,3655);}}
+else if(c!==null){me.SetCookie(thc,t,-10);}}
+function pe(n){var p=n.parentNode;while(p&&p.nodeType!=1){p=p.parentNode;}
+return p;}
+function pn(el,tn){while(el&&el.tagName!=tn){el=pe(el);}
+return el;}
+function wli(ul){for(var i=0;i<ul.childNodes.length;++i){var c=ul.childNodes[i];if(c.nodeType==1&&c.tagName=="LI"){if(delClass(c,"selected")){break;}}}}
+function hasClass(el,cl){return(el.className.indexOf(cl)>=0);}
+function addClass(el,cl){var cn=el.className;el.className=(cn?cn+" "+cl:cl);}
+function delClass(el,cl){var cn=el.className;var n=cn.indexOf(cl);if(n>=0){if(w.RegExp){var p=cn.split(/\s+/);for(var i=0;i<p.length;++i){if(p[i]==cl){p[i]=null;}}
+el.className=p.join(' ');}
+else{el.className=cn.substring(0,n)+cn.substring(n+cl.length);}}
+return(n>=0);}
+this.SetCss=function(a){var t=a.className.substring(6);var li=pn(a,'LI');if(!hasClass(li,"selected")){var ul=pn(li,'UL');wli(ul);addClass(li,"selected");doTheme(t);}
+if(w.event){w.event.returnValue=false;}
+return false;};this.WriteChoices=function(lc,h){var ls=T("link");var ch=[];var c=0;var s=-1;for(var i=0;i<ls.length;i++){var l=ls[i];if(l.getAttribute("rel")=="alternate stylesheet"){c++;var sName=l.className.substring(6);if(!l.disabled){s=c;}
+ch[c]='<a class="theme_'+sName+'" href="#" onclick="return Msn.Theme.SetCss(this)">'+l.title+'</a>';}}
+if(ch.length>0){if(lc){lc=' class="'+lc+'"';}
+if(c>1){if(h){d.write('<h4>'+h+'</h4>');}
+d.write('<ul'+lc+'>');for(i=1;i<ch.length;i++){var ic='';if(i==1){ic='first';}
+else if(i==ch.length-1){ic='last';}
+if(i==s){ic+=' selected';}
+if(ic){ic=' class="'+ic+'"';}
+d.write('<li'+ic+'>'+ch[i]+'</li>');}
+d.write('</ul>');}}};this.GetCookie=function(nm){var m=null;if(w.RegExp){var re=new RegExp(";\\s*"+nm+"=([^;]*)","i");m=re.exec(';'+d.cookie);}
+return(m?unescape(m[1]):null);};this.SetCookie=function(nm,val,y){var exp="";if(y){var dt=new Date();dt.setTime(dt.getTime()+(y*86400000));exp="; expires="+dt.toGMTString();}
+d.cookie=nm+"="+escape(val)+exp+";path=/";};this.oncreate=function(){if(d.attachEvent){w.attachEvent("onunload",me.ondestroy);}
+doTheme(me.GetCookie(thc));};this.ondestroy=function(){w.detachEvent("onunload",me.ondestroy);};this.oncreate();return this;};
+
+}
+/*
+     FILE ARCHIVED ON 13:23:46 May 03, 2006 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:53:14 Dec 15, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 5586.189
+  exclusion.robots: 0.104
+  exclusion.robots.policy: 0.095
+  cdx.remote: 0.081
+  esindex: 0.01
+  LoadShardBlock: 74.102 (3)
+  PetaboxLoader3.datanode: 107.257 (4)
+  CDXLines.iter: 17.601 (3)
+  load_resource: 105.965
+  PetaboxLoader3.resolve: 42.532
+*/

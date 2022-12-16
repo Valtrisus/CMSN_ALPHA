@@ -1,0 +1,43 @@
+﻿var _____WB$wombat$assign$function_____ = function(name) {return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
+if (!self.__WB_pmw) { self.__WB_pmw = function(obj) { this.__WB_source = obj; return this; } }
+{
+  let window = _____WB$wombat$assign$function_____("window");
+  let self = _____WB$wombat$assign$function_____("self");
+  let document = _____WB$wombat$assign$function_____("document");
+  let location = _____WB$wombat$assign$function_____("location");
+  let top = _____WB$wombat$assign$function_____("top");
+  let parent = _____WB$wombat$assign$function_____("parent");
+  let frames = _____WB$wombat$assign$function_____("frames");
+  let opener = _____WB$wombat$assign$function_____("opener");
+
+
+if(!window.Msn){window.Msn={};}
+Msn.Navigation=new function(){var w=window;var d=document;this.OpenNew=function(a){var win=null;if(a.href){win=w.open(a.href);if(win&&Msn.Gtracking){Msn.Gtracking.TrackClick(a);}}
+if(event){event.returnValue=(win===null);}
+return(win===null);};this.OpenPopup=function(a,p){if(a.href){var win=w.open(a.href,"",p);if(Msn.Gtracking){Msn.Gtracking.TrackClick(a,(!win?'BLOCKED':''));}}
+if(event){event.returnValue=false;}
+return false;};this.AddBookmark=function(a,msg){if(w.external&&typeof(w.external.AddFavorite)!="undefined"){var u=a.href;var t=a.getAttribute("title");w.external.AddFavorite((((u!='#')&&(u!=d.location.href+'#'))?u:d.location.href),(t?t:d.title));}
+else{var m=(msg?msg:"Press {0} to bookmark this page.");w.alert(m.replace("{0}",(w.navigator.platform.indexOf("Mac")<0?"Ctrl+D":"Command+D")));}
+return false;};};
+
+}
+/*
+     FILE ARCHIVED ON 13:23:40 May 03, 2006 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:53:08 Dec 15, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 131.856
+  exclusion.robots: 0.072
+  exclusion.robots.policy: 0.065
+  RedisCDXSource: 0.509
+  esindex: 0.007
+  LoadShardBlock: 107.997 (3)
+  PetaboxLoader3.datanode: 104.088 (4)
+  CDXLines.iter: 16.799 (3)
+  load_resource: 27.151
+*/

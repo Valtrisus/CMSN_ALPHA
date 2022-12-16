@@ -1,0 +1,90 @@
+var _____WB$wombat$assign$function_____ = function(name) {return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
+if (!self.__WB_pmw) { self.__WB_pmw = function(obj) { this.__WB_source = obj; return this; } }
+{
+  let window = _____WB$wombat$assign$function_____("window");
+  let self = _____WB$wombat$assign$function_____("self");
+  let document = _____WB$wombat$assign$function_____("document");
+  let location = _____WB$wombat$assign$function_____("location");
+  let top = _____WB$wombat$assign$function_____("top");
+  let parent = _____WB$wombat$assign$function_____("parent");
+  let frames = _____WB$wombat$assign$function_____("frames");
+  let opener = _____WB$wombat$assign$function_____("opener");
+
+
+if(!window.Msn){window.Msn={};}
+Msn.Home=new function(){var me=this;var d=document;var w=window;function E(id){return d.getElementById(id);}
+function onkeydown(){var s=event.srcElement;var tgt=E("sh");if(s&&tgt&&!event.ctrlKey&&!event.altKey&&!event.metaKey){var k=event.keyCode;if(s==tgt){if(k==9&&event.charCode!==0){event.returnValue=at(event.shiftKey);if(!event.returnValue&&event.preventDefault){foc(tgt,1);}}
+else if(32<k&&k<35){tgt.blur();}
+else if(!tgt.value&&36<k&&k<41){tgt.blur();}}
+else if(s.type!='text'&&((47<k&&k<91)||(95<k&&k<112)||(185<k&&k<193)||(218<k&&k<231))){tgt.value='';tgt.focus();}}}
+function onkeypress(){if(event.srcElement==E("sh")&&event.keyCode==9&&event.charCode===0){event.returnValue=at(event.shiftKey);}}
+function at(rev){var ts=E("searchcategory");if(ts){var ul=cel(ts,"UL");if(ul){var ndx=-1;var c,sel=null;for(var i=0;!sel&&i<ul.childNodes.length;++i){c=ul.childNodes[i];if(c.nodeType==1&&c.tagName=="LI"){++ndx;if(hasClass(c,"selected")){sel=c;}}}
+if(!ndx&&rev){var p=lv(E("header2"),"A");if(p){p.focus();return false;}}
+else if(sel){if(rev){c=sel.previousSibling;while(c&&(c.nodeType!=1||c.tagName!="LI")){c=c.previousSibling;}
+if(c){delClass(sel,"selected");addClass(c,"selected");ta(c);return false;}}
+else{c=sel.nextSibling;while(c&&(c.nodeType!=1||c.tagName!="LI")){c=c.nextSibling;}
+if(c){delClass(sel,"selected");addClass(c,"selected");ta(c);return false;}}}}}
+return true;}
+function lv(el,nm){var a=null;if(el&&el.nodeType==1&&el.style.display!='none'){if(el.tagName==nm){a=el;}
+else{var lc=el.lastChild;while(lc){if((a=lv(lc,nm))){break;}
+lc=lc.previousSibling;}}}
+return a;}
+function foc(tgt,tm){w.setTimeout(function(){tgt.focus();},tm);}
+function st(a){var li=pel(a,"LI");if(!hasClass(li,"selected")){var ul=pel(li,"UL");rcsel(ul);addClass(li,"selected");}
+ta(a);}
+function ta(a){a=gce(a,"A");if(a){var y=E("sy");if(y&&w.RegExp){var re=/[\?&]srch_type=([^&]*)/i;var m=re.exec(a.href);if(m&&m[1]!==null){y.disabled=false;y.value=m[1];}
+else{y.disabled=true;y.value="";}}}
+var l=E("sl");if(l&&a.title){l.innerHTML=a.title+':';}
+var f=E('sf');if(f){f.action=a.href;}}
+function gce(el,nm){var a=null;if(el){if(el.tagName==nm){a=el;}
+else{for(var i=0;!a&&i<el.childNodes.length;++i){var c=el.childNodes[i];if(c.nodeType==1){a=(c.tagName==nm?c:gce(c,nm));}}}}
+return a;}
+function rcsel(el){for(var i=0;i<el.childNodes.length;++i){var c=el.childNodes[i];if(c.nodeType==1){if(delClass(c,"selected")){break;}}}}
+function hasClass(el,cl){return(el.className.indexOf(cl)>=0);}
+function addClass(el,cl){var cn=el.className;el.className=(cn?cn+" "+cl:cl);}
+function delClass(el,cl){var cn=el.className;var n=cn.indexOf(cl);if(n>=0){if(w.RegExp){var p=cn.split(/\s+/);for(var i=0;i<p.length;++i){if(p[i]==cl){p[i]=null;}}
+el.className=p.join(' ');}
+else{el.className=cn.substring(0,n)+cn.substring(n+cl.length);}}
+return(n>=0);}
+function pel(el,nm){while(el&&el.tagName!=nm){el=pe(el);}
+return el;}
+function cel(el,nm){var ul=null;for(var i=0;!ul&&i<el.childNodes.length;++i){var c=el.childNodes[i];if(c.nodeType==1){if(c.tagName==nm){ul=c;break;}
+else{ul=cel(c,nm);}}}
+return ul;}
+this.TabInit=function(){var tgt=E("sh");if(tgt){tgt.setAttribute("autocomplete","");tgt.setAttribute("VCARD_NAME","SearchText");}};this.TabFocus=function(a){st(a);var tgt=E("sh");if(tgt){tgt.focus();}};this.TabClick=function(a){var li=pel(a,"LI");if(li&&!hasClass(li,"selected")){me.TabFocus(a);}
+event.returnValue=false;return false;};function pe(n){var p=n.parentNode;while(p&&p.nodeType!=1){p=p.parentNode;}
+return p;}
+function hhp(mh){var p=pe(mh);if(!p){p=mh;}
+p.style.display="none";var pli=p.previousSibling;while(pli&&pli.nodeType!=1){pli=pli.previousSibling;}
+if(pli&&pli.tagName=="LI"){addClass(pli,"last");}}
+this.HideHP=function(){var mh=E('mh');if(mh&&document.all){mh.style.behavior="url(#default#homepage)";if(typeof(mh.isHomePage)!="undefined"){var u=mh.getAttribute("title");if(!u){u='http://'+w.location.host+'/';}
+if(mh.isHomePage(u)){hhp(mh);}}
+else{hhp(mh);}}
+else if(mh){hhp(mh);}};this.SetHP=function(a){if(a&&typeof(a.setHomePage)!="undefined"){var u=a.getAttribute("title");if(!u){u='http://'+w.location.host+'/';}
+a.setHomePage(u);event.returnValue=false;return false;}
+return true;};this.TrackEvent=function(cm,ce,hl,tgt,gt1){if(!gt1){gt1='';}
+if(Msn.Linktracking){var cr={prop11:cm,prop13:ce,prop14:hl,prop16:gt1,prop15:w.s.pageName};Msn.LinkTracking.TrackReport(tgt,cr);}
+if(Msn.Gtracking){var tu=Msn.Gtracking.CreateReport2(tgt,cm,ce,hl,gt1);if(tu){Msn.Gtracking.TrackReport(tu);}}};this.oncreate=function(){if(d.attachEvent){d.attachEvent("onkeydown",onkeydown);d.attachEvent("onkeypress",onkeypress);w.attachEvent("onunload",me.ondestroy);}};this.ondestroy=function(){w.detachEvent("onunload",me.ondestroy);d.detachEvent("onkeypress",onkeypress);d.detachEvent("onkeydown",onkeydown);};this.oncreate();return this;};
+
+}
+/*
+     FILE ARCHIVED ON 13:23:43 May 03, 2006 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:53:11 Dec 15, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 199.296
+  exclusion.robots: 0.229
+  exclusion.robots.policy: 0.206
+  RedisCDXSource: 21.02
+  esindex: 0.016
+  LoadShardBlock: 145.197 (3)
+  PetaboxLoader3.datanode: 166.817 (4)
+  CDXLines.iter: 17.685 (3)
+  load_resource: 307.604
+  PetaboxLoader3.resolve: 238.975
+*/

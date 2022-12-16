@@ -1,0 +1,48 @@
+﻿var _____WB$wombat$assign$function_____ = function(name) {return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
+if (!self.__WB_pmw) { self.__WB_pmw = function(obj) { this.__WB_source = obj; return this; } }
+{
+  let window = _____WB$wombat$assign$function_____("window");
+  let self = _____WB$wombat$assign$function_____("self");
+  let document = _____WB$wombat$assign$function_____("document");
+  let location = _____WB$wombat$assign$function_____("location");
+  let top = _____WB$wombat$assign$function_____("top");
+  let parent = _____WB$wombat$assign$function_____("parent");
+  let frames = _____WB$wombat$assign$function_____("frames");
+  let opener = _____WB$wombat$assign$function_____("opener");
+
+
+if(!window.Msn){window.Msn={};}
+Msn.Flash=new function(){var me=this;var flv=null;var d=document;var w=window;function E(id){return d.getElementById(id);}
+function flVer(){if(flv===null){flv=0;var i,f=null,p=w.navigator.plugins;if(p&&p.length){f=(p["Shockwave Flash"]||p["Shockwave Flash 2.0"]);if(f&&(i=f.description)){flv=parseInt(i.substring(i.indexOf('.')-2));}}
+else if(w.ActiveXObject){for(i=15;i>2&&!f;--i){eval("try{f=new ActiveXObject('ShockwaveFlash.ShockwaveFlash.'+i);}catch(e){}");if(f){flv=i;}}}}
+return flv;}
+this.Version=function(){return flVer();};this.Build=function(f,v,wf,hf,id){var m=5;if(v){var p=v.lastIndexOf(' ');if(p>0){p=parseInt(v.substring(p));}
+else{p=parseInt(v);}
+m=(isNaN(p)?m:p);}
+if(m<=flVer()){var el='<object type="application/x-shockwave-flash" width="'+
+wf+'" height="'+hf+'" data="'+f+'"><param name="movie" value="'+
+f+'"/><param name="quality" value="high"/><param name="wmode" value="transparent"/></object>';var dv=(id?d.getElementById(id):null);if(dv){dv.innerHTML=el;}
+else{d.write(el);}}};return this;};
+
+}
+/*
+     FILE ARCHIVED ON 13:23:12 May 03, 2006 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:53:09 Dec 15, 2022.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 244.059
+  exclusion.robots: 0.083
+  exclusion.robots.policy: 0.074
+  RedisCDXSource: 13.686
+  esindex: 0.009
+  LoadShardBlock: 200.449 (3)
+  PetaboxLoader3.datanode: 265.58 (4)
+  CDXLines.iter: 16.784 (3)
+  load_resource: 645.725
+  PetaboxLoader3.resolve: 461.288
+*/
